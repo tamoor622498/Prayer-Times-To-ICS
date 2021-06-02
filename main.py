@@ -21,19 +21,26 @@ def DaysForMonth(month, year):
 
 def main():
     days = DaysForMonth(6, 2021)
-
+    c = Calendar()
     for i in range(len(days)):
         unixTime = int(time.mktime(datetime.strptime(days[i], "%Y-%m-%d").timetuple()))
         PARAMS = {"city":"gambrills", "country":"United States"} #Query Parameters
         res = requests.get(' http://api.aladhan.com/v1/timingsByCity'+ "/" + str(unixTime) + "?", params=PARAMS).json() #get and convert to jSON
         for k in range(len(prayers)):
-            print(res["data"]["date"]["gregorian"]["date"] + " " + res["data"]["timings"][prayers[k]] + ":00" + "----" + prayers[k])
-    # #print(res["data"]["timings"]["Fajr"])
-    # dateString = res["data"]["date"]["gregorian"]["date"] + " " + res["data"]["timings"]["Fajr"] + ":00"
-    # date=datetime.strptime(dateString,"%d-%m-%Y %H:%M:%S")
-    # date_eastern=eastern.localize(date,is_dst=None)
-    # date_utc=date_eastern.astimezone(utc)
-    # print(date_utc.strftime(fmt)[:-8])
+            #print(res["data"]["date"]["gregorian"]["date"] + " " + res["data"]["timings"][prayers[k]] + ":00" + "----" + prayers[k])
+            dateString = res["data"]["date"]["gregorian"]["date"] + " " + res["data"]["timings"][prayers[k]] + ":00"
+            date=datetime.strptime(dateString,"%d-%m-%Y %H:%M:%S")
+            date_eastern=eastern.localize(date,is_dst=None)
+            date_utc=date_eastern.astimezone(utc)
+            eTime = date_utc.strftime(fmt)[:-8]
+            e = Event()
+            e.name = prayers[k]
+            e.begin = eTime
+            c.events.add(e)
+            c.events
+            print(prayers[k] + " " + eTime)
+    with open('my.ics', 'w') as my_file:
+        my_file.writelines(c)
 
     # arr = DaysForMonth(6, 2021)
     # for i in range(len(arr)):
